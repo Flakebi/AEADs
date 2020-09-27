@@ -131,6 +131,50 @@ where
     }
 }
 
+impl<Cipher> Eax<Cipher>
+where
+    Cipher: BlockCipher<BlockSize = U16> + NewBlockCipher + Clone,
+    Cipher::ParBlocks: ArrayLength<Block<Cipher>>,
+{
+    fn decrypt_in_place_detached2(
+        &self,
+        nonce: &GenericArray<u8, Self::NonceSize>,
+        associated_data: &[u8],
+        buffer: &mut [u8],
+        tag: &[u8],
+    ) -> Result<(), Error> {
+        if buffer.len() as u64 > C_MAX || associated_data.len() as u64 > A_MAX {
+            return Err(Error);
+        }
+
+        // 1. n ← OMAC(0 || Nonce)
+        let n = Self::cmac_with_iv(&self.key, 0, nonce);
+
+        // 2. h ← OMAC(1 || associated data)
+        let h = Self::cmac_with_iv(&self.key, 1, associated_data);
+
+        // 4. c ← OMAC(2 || enc)
+        let c = Self::cmac_with_iv(&self.key, 2, buffer);
+
+        // 5. tag ← n ^ h ^ c
+        // (^ means xor)
+        let expected_tag = n.zip(h, |a, b| a ^ b).zip(c, |a, b| a ^ b);
+
+        let expected_tag = &expected_tag[..tag.len()];
+
+        // Check mac using secure comparison
+        use subtle::ConstantTimeEq;
+        if expected_tag.ct_eq(tag).unwrap_u8() == 1 {
+            // Decrypt
+            let mut cipher = ctr::Ctr128::<Cipher>::from_block_cipher(Cipher::new(&self.key), &n);
+            cipher.apply_keystream(buffer);
+            Ok(())
+        } else {
+            Err(Error)
+        }
+    }
+}
+
 impl<Cipher> AeadInPlace for Eax<Cipher>
 where
     Cipher: BlockCipher<BlockSize = U16> + NewBlockCipher + Clone,
@@ -180,35 +224,7 @@ where
         buffer: &mut [u8],
         tag: &Tag,
     ) -> Result<(), Error> {
-        if buffer.len() as u64 > C_MAX || associated_data.len() as u64 > A_MAX {
-            return Err(Error);
-        }
-
-        // 1. n ← OMAC(0 || Nonce)
-        let n = Self::cmac_with_iv(&self.key, 0, nonce);
-
-        // 2. h ← OMAC(1 || associated data)
-        let h = Self::cmac_with_iv(&self.key, 1, associated_data);
-
-        // 4. c ← OMAC(2 || enc)
-        let c = Self::cmac_with_iv(&self.key, 2, buffer);
-
-        // 5. tag ← n ^ h ^ c
-        // (^ means xor)
-        let expected_tag = n.zip(h, |a, b| a ^ b).zip(c, |a, b| a ^ b);
-
-        let expected_tag = &expected_tag[..tag.len()];
-
-        // Check mac using secure comparison
-        use subtle::ConstantTimeEq;
-        if expected_tag.ct_eq(tag).unwrap_u8() == 1 {
-            // Decrypt
-            let mut cipher = ctr::Ctr128::<Cipher>::from_block_cipher(Cipher::new(&self.key), &n);
-            cipher.apply_keystream(buffer);
-            Ok(())
-        } else {
-            Err(Error)
-        }
+        self.decrypt_in_place_detached2(nonce, associated_data, buffer, tag.as_slice())
     }
 }
 
