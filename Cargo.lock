@@ -54,7 +54,7 @@ dependencies = [
  "aead",
  "aes",
  "cmac",
- "crypto-mac",
+ "crypto-mac 0.9.1",
  "ctr",
  "dbl",
  "hex-literal",
@@ -155,12 +155,21 @@ dependencies = [
 ]
 
 [[package]]
-name = "cmac"
-version = "0.4.0"
+name = "cipher"
+version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "5220604fe5c112e2851b00da795c72cbb71bf112f2cbd532bdcfb4106eeb320b"
+checksum = "a1f7954ae5588102b35257639b1c36a2e7425cc6540fcdb4de19dcb91055d659"
 dependencies = [
- "crypto-mac",
+ "generic-array 0.14.4",
+]
+
+[[package]]
+name = "cmac"
+version = "0.5.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "73d4de4f7724e5fe70addfb2bd37c2abd2f95084a429d7773b0b9645499b4272"
+dependencies = [
+ "crypto-mac 0.10.0",
  "dbl",
 ]
 
@@ -171,6 +180,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "58bcd97a54c7ca5ce2f6eb16f6bede5b0ab5f0055fedc17d2f0b4466e21671ca"
 dependencies = [
  "block-cipher",
+ "generic-array 0.14.4",
+ "subtle",
+]
+
+[[package]]
+name = "crypto-mac"
+version = "0.10.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4857fd85a0c34b3c3297875b747c1e02e06b6a0ea32dd892d8192b9ce0813ea6"
+dependencies = [
+ "cipher",
  "generic-array 0.14.4",
  "subtle",
 ]
@@ -366,7 +386,7 @@ version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "617878d446faaf7294528e72683f082233e4b04b93982972e06dd17c293a727e"
 dependencies = [
- "crypto-mac",
+ "crypto-mac 0.9.1",
  "dbl",
 ]
 
