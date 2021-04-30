@@ -165,6 +165,12 @@ dependencies = [
 ]
 
 [[package]]
+name = "cpufeatures"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5cd5a7748210e7ec1a9696610b1015e6e31fbf58f77a160801f124bd1c36592a"
+
+[[package]]
 name = "crypto-mac"
 version = "0.9.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -372,10 +378,12 @@ dependencies = [
 
 [[package]]
 name = "poly1305"
-version = "0.6.0"
+version = "0.7.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d9b42192ab143ed7619bf888a7f9c6733a9a2153b218e2cd557cfdb52fbf9bb1"
+checksum = "4fe800695325da85083cd23b56826fccb2e2dc29b218e7811a6f33bc93f414be"
 dependencies = [
+ "cpufeatures",
+ "opaque-debug",
  "universal-hash",
 ]
 
