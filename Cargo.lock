@@ -155,6 +155,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "cipher"
+version = "0.3.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "7ee52072ec15386f770805afd189a01c8841be8696bed250fa2f13c4c0d6dfb7"
+dependencies = [
+ "generic-array 0.14.4",
+]
+
+[[package]]
 name = "cmac"
 version = "0.4.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -329,12 +338,11 @@ dependencies = [
 
 [[package]]
 name = "kuznyechik"
-version = "0.5.0"
+version = "0.7.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3b14bb5ee0d7f49eb0dad8c4b293b9d2bca7437b931d9dd017f5012814ef6aad"
+checksum = "1020a37e326b4033680520bf26d4ec7366f92827e5d2c5620a38511f2fd732c5"
 dependencies = [
- "block-cipher",
- "opaque-debug",
+ "cipher",
 ]
 
 [[package]]
